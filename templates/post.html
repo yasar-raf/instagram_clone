@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Post by {{ post.user.username if post.user else 'Unknown' }} - Instagram Clone{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="post-detail">
+        <div class="post-image-container">
+            {% if post.image_url %}
+            <img src="{{ post.image_url }}" alt="Post image" class="post-image-full">
+            {% else %}
+            <div class="post-no-image-large">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <p>No image</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="post-sidebar">
+            <!-- Post Author -->
+            <div class="post-header">
+                {% if post.user %}
+                <a href="{{ url_for('user_profile', user_id=post.user._id) }}" class="post-author">
+                    <div class="post-author-pic">
+                        {% if post.user.profile_picture_url %}
+                        <img src="{{ post.user.profile_picture_url }}" alt="{{ post.user.username }}">
+                        {% else %}
+                        <div class="post-author-pic-placeholder">
+                            {{ post.user.username[0]|upper }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <span class="post-author-username">{{ post.user.username }}</span>
+                    {% if post.user.is_verified %}
+                    <span class="verified-badge-small">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                        </svg>
+                    </span>
+                    {% endif %}
+                </a>
+                {% else %}
+                <div class="post-author">
+                    <div class="post-author-pic-placeholder">?</div>
+                    <span class="post-author-username">Unknown</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Caption -->
+            {% if post.caption %}
+            <div class="post-caption">
+                {% if post.user %}
+                <a href="{{ url_for('user_profile', user_id=post.user._id) }}" class="caption-username">
+                    {{ post.user.username }}
+                </a>
+                {% endif %}
+                <span class="caption-text">{{ post.caption }}</span>
+            </div>
+            {% endif %}
+
+            <!-- Comments Section -->
+            <div class="comments-section">
+                <h3 class="section-title">Comments ({{ comments|length }})</h3>
+                {% if comments %}
+                <div class="comments-list">
+                    {% for comment in comments %}
+                    <div class="comment">
+                        <div class="comment-header">
+                            {% if comment.user %}
+                            <a href="{{ url_for('user_profile', user_id=comment.user._id) }}" class="comment-author">
+                                <div class="comment-author-pic">
+                                    {% if comment.user.profile_picture_url %}
+                                    <img src="{{ comment.user.profile_picture_url }}" alt="{{ comment.user.username }}">
+                                    {% else %}
+                                    <div class="comment-author-pic-placeholder">
+                                        {{ comment.user.username[0]|upper }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <span class="comment-username">{{ comment.user.username }}</span>
+                            </a>
+                            {% else %}
+                            <div class="comment-author">
+                                <div class="comment-author-pic-placeholder">?</div>
+                                <span class="comment-username">Unknown</span>
+                            </div>
+                            {% endif %}
+                            {% if comment.created_at %}
+                            <span class="comment-time">{{ comment.created_at|time_ago }}</span>
+                            {% endif %}
+                        </div>
+                        <p class="comment-text">{{ comment.text or comment.content or '' }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-comments">
+                    <p>No comments yet</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Likes Section -->
+            <div class="likes-section">
+                <div class="likes-count">
+                    <svg viewBox="0 0 24 24" fill="currentColor" class="heart-icon">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                    <span>{{ likes_count }} likes</span>
+                </div>
+
+                {% if likes %}
+                <div class="likes-list">
+                    <p class="liked-by-text">Liked by:</p>
+                    <div class="liked-users">
+                        {% for like in likes %}
+                        {% if like.user %}
+                        <a href="{{ url_for('user_profile', user_id=like.user._id) }}" class="liked-user" title="{{ like.user.username }}">
+                            {% if like.user.profile_picture_url %}
+                            <img src="{{ like.user.profile_picture_url }}" alt="{{ like.user.username }}">
+                            {% else %}
+                            <div class="liked-user-placeholder">
+                                {{ like.user.username[0]|upper }}
+                            </div>
+                            {% endif %}
+                        </a>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Post Date -->
+            {% if post.created_at %}
+            <div class="post-date">
+                {{ post.created_at|format_date }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <a href="{{ url_for('user_profile', user_id=post.user._id) if post.user else url_for('index') }}" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back to profile
+    </a>
+</div>
+{% endblock %}

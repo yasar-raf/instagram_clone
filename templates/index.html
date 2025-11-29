@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Instagram Clone - Home{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Discover Users</h1>
+        <p class="subtitle">{{ users|length }} users found</p>
+    </div>
+
+    <div class="users-grid">
+        {% for user in users %}
+        <a href="{{ url_for('user_profile', user_id=user._id) }}" class="user-card">
+            <div class="user-card-header">
+                <div class="profile-pic-container">
+                    {% if user.profile_picture_url %}
+                    <img src="{{ user.profile_picture_url }}" alt="{{ user.username }}" class="profile-pic">
+                    {% else %}
+                    <div class="profile-pic-placeholder">
+                        {{ user.username[0]|upper if user.username else '?' }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% if user.is_verified %}
+                <span class="verified-badge" title="Verified">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                </span>
+                {% endif %}
+            </div>
+
+            <div class="user-card-body">
+                <h3 class="username">@{{ user.username }}</h3>
+                <p class="full-name">{{ user.full_name or user.name or 'No name' }}</p>
+            </div>
+
+            <div class="user-card-stats">
+                <div class="stat">
+                    <span class="stat-value">{{ user.followers_count }}</span>
+                    <span class="stat-label">followers</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">{{ user.following_count }}</span>
+                    <span class="stat-label">following</span>
+                </div>
+            </div>
+        </a>
+        {% else %}
+        <div class="no-users">
+            <p>No users found in the database.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
