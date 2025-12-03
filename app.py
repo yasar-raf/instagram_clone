@@ -8,8 +8,7 @@ import streamlit as st
 app = Flask(__name__)
 
 # MongoDB connection
-aws_key = st.secrets["URI"]
-MONGO_URI = aws_key
+MONGO_URI = st.secrets["URI"]
 client = MongoClient(MONGO_URI, tlsCAFile=certifi.where())
 db = client["instagram_db"]
 
