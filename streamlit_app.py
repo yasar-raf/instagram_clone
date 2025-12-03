@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from bson import ObjectId
 from datetime import datetime
 import certifi
+import streamlit as st
 
 # Page config
 st.set_page_config(
@@ -11,10 +12,13 @@ st.set_page_config(
     layout="wide"
 )
 
+
+
+
 # MongoDB connection
 @st.cache_resource
 def get_database():
-    MONGO_URI = "mongodb+srv://yasararafathjiy:0xRS9GCraXiFrruo@pm-course.slax53d.mongodb.net/"
+    MONGO_URI = st.secrets["URI"]
     client = MongoClient(MONGO_URI, tlsCAFile=certifi.where())
     return client["instagram_db"]
 
