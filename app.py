@@ -7,7 +7,8 @@ import certifi
 app = Flask(__name__)
 
 # MongoDB connection
-MONGO_URI = "mongodb+srv://yasararafathjiy:0xRS9GCraXiFrruo@pm-course.slax53d.mongodb.net/"
+aws_key = st.secrets["URI"]
+MONGO_URI = aws_key
 client = MongoClient(MONGO_URI, tlsCAFile=certifi.where())
 db = client["instagram_db"]
 
